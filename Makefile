@@ -21,3 +21,4 @@ test: all
 #		echo;
 #		fst-mor flexion.a
 	cut -d ' ' -f 1,3 test.tsv | python3 analyze.py
+
