@@ -1,4 +1,3 @@
-flexion.a
-experimental/sumor.a
-experimental/orth.a
-experimental/sumor.a
+*.a
+experimental/*.a
+
