@@ -1,0 +1,110 @@
+name: SuMor CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-main:
+    name: Main pipeline
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install uv
+        uses: astral-sh/uv-actions@v3
+      - name: Sync dependencies
+        run: uv sync --frozen
+      - name: Check HFST transducer
+        run: just check-hfst
+      - name: Run main test
+        run: just test
+
+  test-experimental:
+    name: Experimental pipeline
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install uv
+        uses: astral-sh/uv-actions@v3
+      - name: Sync dependencies
+        run: uv sync --frozen
+      - name: Check HFST transducers
+        run: cd experimental && just check-hfst
+      - name: Run experimental test
+        run: cd experimental && just test
+
+  translit-test:
+    name: Transliteration test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install uv
+        uses: astral-sh/uv-actions@v3
+      - name: Sync dependencies
+        run: uv sync --frozen
+      - name: Check HFST transducers
+        run: cd experimental && just check-hfst
+      - name: Run translit-test
+        run: cd experimental && just translit-test
+
+  pytest:
+    name: Pytest suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install uv
+        uses: astral-sh/uv-actions@v3
+      - name: Sync dependencies
+        run: uv sync --frozen
+      - name: Run pytest
+        run: just pytest
+
+  lint:
+    name: Ruff lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install uv
+        uses: astral-sh/uv-actions@v3
+      - name: Sync dependencies
+        run: uv sync --frozen
+      - name: Run ruff lint
+        run: just lint
+
+  fmt:
+    name: Ruff format check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install uv
+        uses: astral-sh/uv-actions@v3
+      - name: Sync dependencies
+        run: uv sync --frozen
+      - name: Run ruff format check
+        run: just fmt
