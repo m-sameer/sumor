@@ -1,4 +1,5 @@
 import re
+
 """ compile signs.tsv into signs.fst """
 
 signs = ["signs.tsv"]
@@ -9,7 +10,7 @@ for file in signs:
     with open(file, "rt", encoding="utf-8") as input:
         for line in input:
             if "#" in line:
-                line = line[0:line.index("#")]
+                line = line[0 : line.index("#")]
             line = line.strip()
             if len(line) > 0:
                 fields = line.split()

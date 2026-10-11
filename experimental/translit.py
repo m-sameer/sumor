@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 
 import hfst
+
 """ 
 
 	conversion between transliterations and transcriptions for Sumerian/cuneiform,
@@ -32,7 +33,7 @@ import hfst
 
 
 def get_med_transc(transc):
-    """ cut off implicit prefixes and suffixes, keep implicit infixes """
+    """cut off implicit prefixes and suffixes, keep implicit infixes"""
 
     DEBUG = False
 
@@ -96,44 +97,35 @@ def generate(basic, alphabet, key):
     return out
 
 
-args = argparse.ArgumentParser(description="""
+args = argparse.ArgumentParser(
+    description="""
 	Read transliterations and produce transcriptions and vice versa using HFST transducers.
 	This is to be applied to CDLI CoNLL files and will produce a list of unanalyzed forms.
-	""")
-args.add_argument("files",
-                  type=str,
-                  nargs="+",
-                  help="CoNLL files to read from")
+	"""
+)
+args.add_argument("files", type=str, nargs="+", help="CoNLL files to read from")
 
 # Default transducer is resolved against this script's directory so the tool
 # works regardless of the current working directory.
 fst = str(Path(__file__).resolve().parent / "orth.hfst")
-args.add_argument("-fst",
-                  "--fst",
-                  type=str,
-                  help="compiled HFST transducer, defaults to " + fst,
-                  default=fst)
+args.add_argument(
+    "-fst", "--fst", type=str, help="compiled HFST transducer, defaults to " + fst, default=fst
+)
 
 form_col = 1
-args.add_argument("-f",
-                  "--form_col",
-                  type=int,
-                  help=f"FORM column, defaults to {form_col}",
-                  default=form_col)
+args.add_argument(
+    "-f", "--form_col", type=int, help=f"FORM column, defaults to {form_col}", default=form_col
+)
 
 segm_col = 2
-args.add_argument("-s",
-                  "--segm_col",
-                  type=int,
-                  help=f"SEGM column, defaults to {segm_col}",
-                  default=segm_col)
+args.add_argument(
+    "-s", "--segm_col", type=int, help=f"SEGM column, defaults to {segm_col}", default=segm_col
+)
 
 pos_col = 3
-args.add_argument("-p",
-                  "--pos_col",
-                  type=int,
-                  help=f"POS column, defaults to {pos_col}",
-                  default=pos_col)
+args.add_argument(
+    "-p", "--pos_col", type=int, help=f"POS column, defaults to {pos_col}", default=pos_col
+)
 
 args = args.parse_args()
 
@@ -169,11 +161,10 @@ for file in args.files:
     with open(file, "rt", encoding="utf-8", errors="ignore") as input:
         for line in input:
             if "#" in line:
-                line = line[0:line.index("#")]  # strip comments
+                line = line[0 : line.index("#")]  # strip comments
             line = line.strip()
             fields = line.split("\t")
             if len(fields) > max(args.form_col, args.segm_col):
-
                 transl = fields[args.form_col]
                 gloss = fields[args.segm_col]
                 pos = "_"
@@ -210,16 +201,14 @@ for file in args.files:
                             if "-" in transl_nodet:
                                 if "(" not in transl_nodet:
                                     # these cannot be processed by the transducer and will always fail
-                                    print(
-                                        f"\ngap detected for transcription {transc}:"
-                                    )
+                                    print(f"\ngap detected for transcription {transc}:")
                                     print("transliteration:", transl)
-                                    print("gold annotation:",
-                                          gloss + " (= " + pos + ")")
+                                    print("gold annotation:", gloss + " (= " + pos + ")")
                                     print(
                                         f"{len(cands)} predicted transliterations:\n"
-                                        + " " * 17 +
-                                        ("\n" + " " * 17).join(cands))
+                                        + " " * 17
+                                        + ("\n" + " " * 17).join(cands)
+                                    )
                             elif transc == plain_transc:
                                 additions.append((transl_nodet + "-", transc))
                             elif transc == med_transc:
@@ -227,12 +216,12 @@ for file in args.files:
 
                     if total > 0:
                         sys.stderr.write(
-                            f"\radding {file}, analyzed: {total}, accuracy: {int(plain_ok*100.0/total)}% (no implicits), {int(med_ok*100.0/total)}% (no implicit prefixes and suffixes), {int(full_ok*100.0/total)}% (incl. implicits)"
+                            f"\radding {file}, analyzed: {total}, accuracy: {int(plain_ok * 100.0 / total)}% (no implicits), {int(med_ok * 100.0 / total)}% (no implicit prefixes and suffixes), {int(full_ok * 100.0 / total)}% (incl. implicits)"
                         )
 
     if total > 0:
         sys.stderr.write(
-            f"\radding {file}, analyzed: {total}, accuracy: {int(plain_ok*100.0/total)}% (no implicits), {int(med_ok*100.0/total)}% (no implicit prefixes and suffixes), {int(full_ok*100.0/total)}% (incl. implicits)\n"
+            f"\radding {file}, analyzed: {total}, accuracy: {int(plain_ok * 100.0 / total)}% (no implicits), {int(med_ok * 100.0 / total)}% (no implicit prefixes and suffixes), {int(full_ok * 100.0 / total)}% (incl. implicits)\n"
         )
 
 sign2transes = {}

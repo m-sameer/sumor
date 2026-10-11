@@ -144,20 +144,18 @@ args = argparse.ArgumentParser(
     description="""parse and generate Sumerian toy grammar.
 We read text from stdin, if it is tab-separated, we consider the second column to be the gold data and create * for mismatches"""
 )
-args.add_argument("fst",
-                  type=str,
-                  nargs="?",
-                  help="compiled hfst transducer, defaults to " + fst,
-                  default=fst)
+args.add_argument(
+    "fst", type=str, nargs="?", help="compiled hfst transducer, defaults to " + fst, default=fst
+)
 args.add_argument(
     "-d",
     "--dicts",
     type=str,
     nargs="*",
     action="extend",
-    help=
-    "dictionaries in TSV format, cols: LEMMA<TAB>POS<TAB>GLOSS[<TAB>...], defaults to "
-    + str(dicts))
+    help="dictionaries in TSV format, cols: LEMMA<TAB>POS<TAB>GLOSS[<TAB>...], defaults to "
+    + str(dicts),
+)
 args = args.parse_args()
 
 if args.dicts is None or len(args.dicts) == 0:
@@ -212,11 +210,8 @@ for line in sys.stdin:
 
         gloss = re.sub(r"<[^>]*>", "", line)
         if gloss in en2sums:
-
             for sum in en2sums[gloss]:
-                key = line[0:line.index(gloss
-                                        )] + sum + line[line.index(gloss) +
-                                                        len(gloss):]
+                key = line[0 : line.index(gloss)] + sum + line[line.index(gloss) + len(gloss) :]
                 print(key)
                 total += 1
                 if gold is not None:
@@ -226,9 +221,11 @@ for line in sys.stdin:
                 if gold in forms:
                     correct += 1
                 for form in forms:
-                    if gold is not None and form != gold and re.sub(
-                            r"[^a-z]", "", form) != re.sub(
-                                r"[^a-z]", "", gold):
+                    if (
+                        gold is not None
+                        and form != gold
+                        and re.sub(r"[^a-z]", "", form) != re.sub(r"[^a-z]", "", gold)
+                    ):
                         print(red("\t*" + form + " (" + gold + ")"))
                     else:
                         for analysis in analyse(an_pair, form):
@@ -239,15 +236,25 @@ for line in sys.stdin:
                             else:
                                 for lemma in sum2en:
                                     if lemma in analysis:
-                                        result = analysis[0:analysis.index(
-                                            lemma)] + sum2en[lemma] + analysis[
-                                                analysis.index(lemma) +
-                                                len(lemma):]
+                                        result = (
+                                            analysis[0 : analysis.index(lemma)]
+                                            + sum2en[lemma]
+                                            + analysis[analysis.index(lemma) + len(lemma) :]
+                                        )
                                         break
                             if amatch != "*":
                                 is_correct = True
-                            row = ("\t " + form + "\t" + str(gold) + "\t" +
-                                   amatch + analysis + "\t" + result)
+                            row = (
+                                "\t "
+                                + form
+                                + "\t"
+                                + str(gold)
+                                + "\t"
+                                + amatch
+                                + analysis
+                                + "\t"
+                                + result
+                            )
                             print(green(row) if amatch == " " else yellow(row))
                 if is_correct:
                     processable += 1
@@ -256,9 +263,9 @@ for line in sys.stdin:
         sys.stderr.write(cyan_err("generate> "))
         sys.stderr.flush()
 if total > 0:
-    summary = f'coverage: {processable} ({int(0.5+processable*100.0/total)}%)'
+    summary = f"coverage: {processable} ({int(0.5 + processable * 100.0 / total)}%)"
     if total_gold > 0:
-        summary += f', correct: {correct}/{total_gold} ({int(0.5+correct*100.0/total_gold)}%)'
+        summary += f", correct: {correct}/{total_gold} ({int(0.5 + correct * 100.0 / total_gold)}%)"
     sys.stderr.write(bold_cyan_err(summary))
 sys.stderr.write("\n")
 sys.stderr.flush()

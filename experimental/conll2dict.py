@@ -3,28 +3,19 @@ import re
 import sys
 
 args = argparse.ArgumentParser(description="get dict from CDLI-CoNLL")
-args.add_argument("files",
-                  type=str,
-                  nargs="+",
-                  help="CoNLL files to read from")
+args.add_argument("files", type=str, nargs="+", help="CoNLL files to read from")
 form_col = 1
-args.add_argument("-f",
-                  "--form_col",
-                  type=int,
-                  help=f"FORM column, defaults to {form_col}",
-                  default=form_col)
+args.add_argument(
+    "-f", "--form_col", type=int, help=f"FORM column, defaults to {form_col}", default=form_col
+)
 seg_col = 2
-args.add_argument("-s",
-                  "--seg_col",
-                  type=int,
-                  help=f"SEGM column, defaults to {seg_col}",
-                  default=seg_col)
+args.add_argument(
+    "-s", "--seg_col", type=int, help=f"SEGM column, defaults to {seg_col}", default=seg_col
+)
 pos_col = 3
-args.add_argument("-p",
-                  "--pos_col",
-                  type=int,
-                  help=f"POS column, defaults to {pos_col}",
-                  default=pos_col)
+args.add_argument(
+    "-p", "--pos_col", type=int, help=f"POS column, defaults to {pos_col}", default=pos_col
+)
 
 args = args.parse_args()
 
@@ -40,18 +31,17 @@ xpos2pos = {
     "RN": "N",
     "N": "N",
     "V": "V",
-    "CNJ": "X"
+    "CNJ": "X",
 }
 
 for file in args.files:
     with open(file, "rt", encoding="utf-8", errors="ignore") as input:
         for line in input:
             if "#" in line:
-                line = line[0:line.index("#")]  # strip comments
+                line = line[0 : line.index("#")]  # strip comments
             line = line.strip()
             fields = line.split("\t")
             if len(fields) > max(args.form_col, args.seg_col, args.pos_col):
-
                 pos = fields[args.pos_col].split(".")
                 for xpos in xpos2pos:
                     if xpos in pos:
@@ -59,8 +49,7 @@ for file in args.files:
                         break
                 pos = pos[0]
                 if pos not in xpos2pos.values():
-                    sys.stderr.write("warning: unknown POS tag in " +
-                                     fields[args.pos_col] + "\n")
+                    sys.stderr.write("warning: unknown POS tag in " + fields[args.pos_col] + "\n")
                     pos = "X"
 
                 lemma_gloss = fields[args.seg_col]

@@ -4,6 +4,7 @@ Golden tests compare pipeline output byte-for-byte against the reference
 outputs in tests/golden/. Colors are disabled automatically because the
 test harness always pipes the tools' stdout/stderr.
 """
+
 import os
 import subprocess
 import sys
