@@ -1,5 +1,9 @@
-import sfst
-import sys, os, re, traceback, argparse
+import argparse
+import re
+import sys
+from pathlib import Path
+
+import hfst
 """ 
 
 	conversion between transliterations and transcriptions for Sumerian/cuneiform,
@@ -18,7 +22,7 @@ import sys, os, re, traceback, argparse
 
 		dubsar=ak (scribe.GEN)
 
-	Note that we don't count transliteration errors of numbers because these are not processable by the SFST system (they use round brackets)
+	Note that we don't count transliteration errors of numbers because these are not processable by the finite-state system (they use round brackets)
 
 """
 
@@ -32,21 +36,25 @@ def get_med_transc(transc):
 
     DEBUG = False
 
-    if DEBUG: print("\nmed_transc", transc, end="\t")
+    if DEBUG:
+        print("\nmed_transc", transc, end="\t")
 
     transc = "]<".join(transc.split("]"))
     transc = ">[".join(transc.split("["))
     transc = re.sub(r"^([^<]*>)", r"<\1", transc)
     transc = re.sub(r"(<[^>]*)$", r"\1>", transc)
-    if DEBUG: print(transc, end="\t")
+    if DEBUG:
+        print(transc, end="\t")
 
     transc = "".join(transc.split("<>"))
-    if DEBUG: print(transc, end="\t")
+    if DEBUG:
+        print(transc, end="\t")
 
     transc = re.sub(r"^[^<]*<", "", transc)
     transc = re.sub(r">[^>]*$", "", transc)
     transc = re.sub(r"[<>\[\]]", "", transc)
-    if DEBUG: print(transc)
+    if DEBUG:
+        print(transc)
 
     return transc
 
@@ -55,8 +63,41 @@ def get_med_transc(transc):
 # config #
 ##########
 
+EPSILON = "@_EPSILON_SYMBOL_@"
+
+
+def tokenize(string, alphabet):
+    """Greedy longest-match tokenization against the transducer alphabet."""
+    tokens = []
+    i = 0
+    while i < len(string):
+        best = None
+        for sym in alphabet:
+            if string.startswith(sym, i) and (best is None or len(sym) > len(best)):
+                best = sym
+        if best is None:
+            tokens.append(string[i])
+            i += 1
+        else:
+            tokens.append(best)
+            i += len(best)
+    return tokens
+
+
+def generate(basic, alphabet, key):
+    """All output strings for key, deduplicated, epsilon markers stripped."""
+    out, seen = [], set()
+    for outlist in basic.lookup(tokenize(key, alphabet)).values():
+        for form, w in outlist:
+            form = form.replace(EPSILON, "")
+            if form not in seen:
+                seen.add(form)
+                out.append(form)
+    return out
+
+
 args = argparse.ArgumentParser(description="""
-	Read transliterations and produce transcriptions and vice versa using SFST transducers.
+	Read transliterations and produce transcriptions and vice versa using HFST transducers.
 	This is to be applied to CDLI CoNLL files and will produce a list of unanalyzed forms.
 	""")
 args.add_argument("files",
@@ -64,11 +105,13 @@ args.add_argument("files",
                   nargs="+",
                   help="CoNLL files to read from")
 
-fst = "orth.a"
+# Default transducer is resolved against this script's directory so the tool
+# works regardless of the current working directory.
+fst = str(Path(__file__).resolve().parent / "orth.hfst")
 args.add_argument("-fst",
                   "--fst",
                   type=str,
-                  help="compiled SFST transducer, defaults to " + fst,
+                  help="compiled HFST transducer, defaults to " + fst,
                   default=fst)
 
 form_col = 1
@@ -98,7 +141,9 @@ args = args.parse_args()
 # init #
 ########
 
-sfst.init(args.fst)
+_t = hfst.HfstTransducer.read_from_file(args.fst)
+_basic = hfst.HfstBasicTransducer(_t)
+_alphabet = list(_basic.get_alphabet())
 
 #################
 # process CoNLL #
@@ -121,7 +166,7 @@ plain_ok = 0
 additions = []
 
 for file in args.files:
-    with open(file, "rt", errors="ignore") as input:
+    with open(file, "rt", encoding="utf-8", errors="ignore") as input:
         for line in input:
             if "#" in line:
                 line = line[0:line.index("#")]  # strip comments
@@ -136,7 +181,7 @@ for file in args.files:
                 if len(fields) > args.pos_col:
                     pos = fields[args.pos_col]
 
-                if not "(" in transl:
+                if "(" not in transl:
                     total += 1
 
                     transc = re.sub(r"([^\-])\[[^\-\]]*\]", r"\1", gloss)
@@ -153,15 +198,18 @@ for file in args.files:
                     # print("\n",gloss,transc,full_transc,med_transc,plain_transc)
 
                     for transc in set([plain_transc, med_transc, full_transc]):
-                        cands = sfst.generate(transc)
+                        cands = generate(_basic, _alphabet, transc)
                         if transl_nodet in cands:
-                            if transc == full_transc: full_ok += 1
-                            if transc == med_transc: med_ok += 1
-                            if transc == plain_transc: plain_ok += 1
+                            if transc == full_transc:
+                                full_ok += 1
+                            if transc == med_transc:
+                                med_ok += 1
+                            if transc == plain_transc:
+                                plain_ok += 1
                         elif transc in [plain_transc, med_transc]:
                             if "-" in transl_nodet:
-                                if not "(" in transl_nodet:
-                                    # these cannot be processed by SFST and will always fail
+                                if "(" not in transl_nodet:
+                                    # these cannot be processed by the transducer and will always fail
                                     print(
                                         f"\ngap detected for transcription {transc}:"
                                     )
@@ -189,8 +237,10 @@ for file in args.files:
 
 sign2transes = {}
 for sign, transl in additions:
-    if not sign in sign2transes: sign2transes[sign] = []
-    if not transl in sign2transes[sign]: sign2transes[sign].append(transl)
+    if sign not in sign2transes:
+        sign2transes[sign] = []
+    if transl not in sign2transes[sign]:
+        sign2transes[sign].append(transl)
 
 if len(sign2transes) > 0:
     print("\nsignary additions:")

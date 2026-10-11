@@ -1,0 +1,54 @@
+generate> dub-sar scribe
+dubsar/N
+	 dub-sar	dub-sar	 dubsar/N	scribe
+	 dub-sar	dub-sar	*dubsar/N<ABS>	
+
+generate> dub-sar scribe<ABS>
+dubsar/N<ABS>
+	 dub-sar	dub-sar	*dubsar/N	
+	 dub-sar	dub-sar	 dubsar/N<ABS>	scribe<ABS>
+
+generate> dub-sar-a scribe<DAT>
+dubsar/N<DAT>
+	*dub-sar-ra (dub-sar-a)
+	*dub-sar-ra-a (dub-sar-a)
+	 dub-sar-a	dub-sar-a	*dubsar/N<GEN>	
+	 dub-sar-a	dub-sar-a	*dubsar/N<GEN><ABS>	
+	 dub-sar-a	dub-sar-a	 dubsar/N<DAT>	scribe<DAT>
+	*dub-sar-a-a (dub-sar-a)
+
+generate> dub-sar-a scribe<GEN>
+dubsar/N<GEN>
+	*dub-sar-ra (dub-sar-a)
+	*dub-sar-ra-a (dub-sar-a)
+	 dub-sar-a	dub-sar-a	 dubsar/N<GEN>	scribe<GEN>
+	 dub-sar-a	dub-sar-a	*dubsar/N<GEN><ABS>	
+	 dub-sar-a	dub-sar-a	*dubsar/N<DAT>	
+	*dub-sar-a-a (dub-sar-a)
+
+generate> dub-sar-ra scribe<DAT>
+dubsar/N<DAT>
+	 dub-sar-ra	dub-sar-ra	*dubsar/N<GEN>	
+	 dub-sar-ra	dub-sar-ra	*dubsar/N<GEN><ABS>	
+	 dub-sar-ra	dub-sar-ra	 dubsar/N<DAT>	scribe<DAT>
+	*dub-sar-ra-a (dub-sar-ra)
+	*dub-sar-a (dub-sar-ra)
+	*dub-sar-a-a (dub-sar-ra)
+
+generate> dub-sar-ra scribe<GEN>
+dubsar/N<GEN>
+	 dub-sar-ra	dub-sar-ra	 dubsar/N<GEN>	scribe<GEN>
+	 dub-sar-ra	dub-sar-ra	*dubsar/N<GEN><ABS>	
+	 dub-sar-ra	dub-sar-ra	*dubsar/N<DAT>	
+	*dub-sar-ra-a (dub-sar-ra)
+	*dub-sar-a (dub-sar-ra)
+	*dub-sar-a-a (dub-sar-ra)
+
+generate> dub-sar-e scribe<ERG>
+dubsar/N<ERG>
+	*dub-sar-re (dub-sar-e)
+	*dub-sar-re-e (dub-sar-e)
+	 dub-sar-e	dub-sar-e	 dubsar/N<ERG>	scribe<ERG>
+	*dub-sar-e-e (dub-sar-e)
+
+generate> coverage: 7 (100%), correct: 7/7 (100%)

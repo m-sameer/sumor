@@ -14,3 +14,8 @@ scribe<GEN>	dub-sar-ra
 #
 # not sure which of these is correct: -re or -e
 scribe<ERG>	dub-sar-e
+
+# Additional scribe forms for DAT/COM/TERM
+scribe<DAT>	dub-sar-a
+scribe<COM>	dub-sar-da
+scribe<TERM>	dub-sar-szi

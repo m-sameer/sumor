@@ -1,0 +1,100 @@
+when:
+  - event: pull_request
+  - event: push
+    branch: ${CI_REPO_DEFAULT_BRANCH}
+
+steps:
+  sync:
+    image: ghcr.io/woodpecker-ci/plugin-uv:1.5
+    settings:
+      command: sync
+    environment:
+      UV_CACHE_DIR: /tmp/uv-cache
+    cache_from:
+      - uv-cache
+    volumes:
+      - /tmp/uv-cache:/root/.cache/uv
+
+  test-main:
+    image: python:3.10-slim
+    depends_on:
+      - sync
+    commands:
+      - uv sync --frozen
+      - just check-hfst
+      - just test
+    environment:
+      UV_CACHE_DIR: /tmp/uv-cache
+    volumes:
+      - /tmp/uv-cache:/root/.cache/uv
+
+  test-experimental:
+    image: python:3.10-slim
+    depends_on:
+      - sync
+    commands:
+      - uv sync --frozen
+      - cd experimental && just check-hfst && just test
+    environment:
+      UV_CACHE_DIR: /tmp/uv-cache
+    volumes:
+      - /tmp/uv-cache:/root/.cache/uv
+
+  translit-test:
+    image: python:3.10-slim
+    depends_on:
+      - sync
+    commands:
+      - uv sync --frozen
+      - cd experimental && just check-hfst && just translit-test
+    environment:
+      UV_CACHE_DIR: /tmp/uv-cache
+    volumes:
+      - /tmp/uv-cache:/root/.cache/uv
+
+  pytest:
+    image: python:3.10-slim
+    depends_on:
+      - sync
+    commands:
+      - uv sync --frozen
+      - just pytest
+    environment:
+      UV_CACHE_DIR: /tmp/uv-cache
+    volumes:
+      - /tmp/uv-cache:/root/.cache/uv
+
+  lint:
+    image: python:3.10-slim
+    depends_on:
+      - sync
+    commands:
+      - uv sync --frozen
+      - just lint
+    environment:
+      UV_CACHE_DIR: /tmp/uv-cache
+    volumes:
+      - /tmp/uv-cache:/root/.cache/uv
+
+  fmt:
+    image: python:3.10-slim
+    depends_on:
+      - sync
+    commands:
+      - uv sync --frozen
+      - just fmt
+    environment:
+      UV_CACHE_DIR: /tmp/uv-cache
+    volumes:
+      - /tmp/uv-cache:/root/.cache/uv
+
+services:
+  cache:
+    image: alpine:3.19
+    commands:
+      - sleep infinity
+    volumes:
+      - uv-cache:/tmp/uv-cache
+
+volumes:
+  uv-cache:

@@ -1,4 +1,4 @@
-import os, sys, re
+import re
 """ compile signs.tsv into signs.fst """
 
 signs = ["signs.tsv"]
@@ -6,7 +6,7 @@ signs = ["signs.tsv"]
 syll2signs = {}
 
 for file in signs:
-    with open(file, "rt") as input:
+    with open(file, "rt", encoding="utf-8") as input:
         for line in input:
             if "#" in line:
                 line = line[0:line.index("#")]
@@ -18,10 +18,10 @@ for file in signs:
                 sign = "\\(".join(sign.split("("))
                 sign = "\\)".join(sign.split(")"))
                 reading = fields[1].strip()
-                if not "(" in sign:
-                    if not reading in syll2signs:
+                if "(" not in sign:
+                    if reading not in syll2signs:
                         syll2signs[reading] = [sign]
-                    elif not sign in syll2signs[reading]:
+                    elif sign not in syll2signs[reading]:
                         syll2signs[reading].append(sign)
 
 lhs_rhs = []

@@ -1,3 +1,9 @@
+# Slot mapping: morpheme feature → surface form (Jagersma Chap.5)
+# Column 1: <FEATURE>:{surface} - morphological feature with surface form
+# Column 2: Slot code (N1-N6 = nominal slots, V1-V15 = verbal slots)
+#   - N3/N5/N6: nominal case, possessive, copula slots
+#   - V1-V15: verbal slots for prefixes, person, aspect (per flexion.fst)
+# References: Jagersma 2010, A Handbook of Sumerian Grammar (pp. 50-70)
 <1-SG-POSS>:{gu}	N3
 <2-SG-POSS>:{zu}	N3
 <3-NH>:{b}	V5

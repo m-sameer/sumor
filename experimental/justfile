@@ -1,0 +1,42 @@
+# SuMor experimental pipeline tasks (HFST-based; no SFST toolchain needed except rebuild-sfst).
+# Recipes work from any directory; all paths are anchored at this justfile.
+
+python := justfile_directory() + "/../.venv/bin/python"
+exp := justfile_directory()
+root := justfile_directory() + "/.."
+
+# Default: verify the committed transducers are present.
+check-hfst:
+    @test -f {{exp}}/sumor.hfst -a -f {{exp}}/orth.hfst -a -f {{exp}}/length.hfst || (echo ".hfst files missing; run 'just rebuild-sfst' (requires fst-compiler-utf8) to regenerate" && exit 1)
+
+# orth.fst is regenerated from signs.tsv; sumor.fst embeds orth.a at compile
+# time and reads the root ../lexicon, so this order matters.
+# Rebuild all transducers from SFST sources (requires fst-compiler-utf8 + libsfst).
+rebuild-sfst:
+    cd {{exp}} && {{python}} signs2fst.py signs.tsv > orth.fst && fst-compiler-utf8 length.fst length.a && fst-compiler-utf8 orth.fst orth.a && fst-compiler-utf8 sumor.fst sumor.a && {{python}} -c "import hfst; t = hfst.HfstTransducer.read_from_file('length.a'); t.minimize(); t.write_to_file('length.hfst')" && {{python}} -c "import hfst; t = hfst.HfstTransducer.read_from_file('orth.a'); t.minimize(); t.write_to_file('orth.hfst')" && {{python}} -c "import hfst; t = hfst.HfstTransducer.read_from_file('sumor.a'); t.minimize(); t.write_to_file('sumor.hfst')"
+
+# Build the experimental dictionary if missing (see conll2dict.py).
+dict:
+    cd {{exp}} && test -f dict.tsv || {{python}} conll2dict.py *conll > dict.tsv
+
+# Run the canned test set and assert byte-parity with the golden reference (-u keeps the merged stream order deterministic).
+test: check-hfst
+    @rm -f /tmp/sumor-exp-test.txt && cd {{exp}} && cat test.tsv | {{python}} -u analyze.py > /tmp/sumor-exp-test.txt 2>&1 && diff -u {{root}}/tests/golden/experimental.txt /tmp/sumor-exp-test.txt && rm -f /tmp/sumor-exp-test.txt && echo "experimental: byte-identical to tests/golden/experimental.txt"
+
+# Evaluate transliterations against P100065.conll.
+translit: check-hfst
+    cd {{exp}} && {{python}} translit.py P100065.conll
+
+# Assert the translit evaluation is byte-identical to the golden reference.
+translit-test: check-hfst
+    @rm -f /tmp/sumor-translit-test.txt && cd {{exp}} && {{python}} -u translit.py P100065.conll > /tmp/sumor-translit-test.txt 2>&1 && diff -u {{root}}/tests/golden/translit.txt /tmp/sumor-translit-test.txt && rm -f /tmp/sumor-translit-test.txt && echo "translit: byte-identical to tests/golden/translit.txt"
+
+# Regenerate the golden references (only when the output change is intended).
+test-update: check-hfst
+    cd {{exp}} && cat test.tsv | {{python}} -u analyze.py > {{root}}/tests/golden/experimental.txt 2>&1 && {{python}} -u translit.py P100065.conll > {{root}}/tests/golden/translit.txt 2>&1 && wc -l {{root}}/tests/golden/experimental.txt {{root}}/tests/golden/translit.txt
+
+# *.a files are git-ignored intermediates, regenerable via rebuild-sfst.
+
+# License: inherits root LICENSE (MIT) + LICENSE-DATA (CC0-1.0).
+clean:
+    rm -f {{exp}}/length.a {{exp}}/orth.a {{exp}}/sumor.a

@@ -1,0 +1,24 @@
+generate> 
+generate> 	*gaø (é)
+
+generate> 
+generate> 	*ensikø (ensi2)
+
+generate> 	 ensikake	ensi2-ka-ke4	 ensik<NOUN><GEN><ERG>	ruler<GEN><ERG>
+
+generate> 	*Kisura (za)
+
+generate> 	*szum (súm)
+
+generate> 	*egalakakta (é-gal-ka-ta)
+
+generate> 
+generate> 
+generate> 
+generate> 	 gared	gar-ed	 gar<VERB><PF>	place<PF>
+
+generate> 
+generate> 
+generate> 
+generate> Total analysis: 15, Correct analysis: 2
+bye!

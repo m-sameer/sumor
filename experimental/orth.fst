@@ -8,11 +8,13 @@ $syll2sign$ = \
 	{ak}:{a$} | \
 	{b\-a}:{ba\-} | \
 	{b\-abbar}:{babbar\-} | \
+	{b\-ad}:{bad3\-} | \
 	{b\-i}:{bi2\-} | \
 	{b\-i}:{bi\-} | \
 	{b\-la}:{la2\-} | \
 	{ba}:{ba\-} | \
 	{babbar}:{babbar\-} | \
+	{bad}:{bad3\-} | \
 	{bi}:{bi2\-} | \
 	{bi}:{bi\-} | \
 	{bla}:{la2\-} | \
@@ -29,10 +31,14 @@ $syll2sign$ = \
 	{g\-i}:{gi\-} | \
 	{g\-ig}:{gin2\-} | \
 	{g\-ur}:{gur\-} | \
+	{g\-urum}:{gurum2\-} | \
+	{g\-urusz}:{gurusz\-} | \
 	{gal}:{gal2\-} | \
 	{gi}:{gi\-} | \
 	{gig}:{gin2\-} | \
 	{gur}:{gur\-} | \
+	{gurum}:{gurum2\-} | \
+	{gurusz}:{gurusz\-} | \
 	{h\-e}:{he2\-} | \
 	{he}:{he2\-} | \
 	{i}:{i3\-} | \
@@ -49,7 +55,13 @@ $syll2sign$ = \
 	{in}:{in\-} | \
 	{ini}:{in\-} | \
 	{iti}:{iti\-} | \
+	{k\-i}:{ki\-} | \
+	{k\-iszib}:{kiszib3\-} | \
+	{k\-szu}:{szusz3\-} | \
 	{k\-ug}:{ku3\-} | \
+	{ki}:{ki\-} | \
+	{kiszib}:{kiszib3\-} | \
+	{kszu}:{szusz3\-} | \
 	{kug}:{ku3\-} | \
 	{l\-a}:{la2\-} | \
 	{l\-a}:{la\-} | \
@@ -83,10 +95,12 @@ $syll2sign$ = \
 	{s\-uen}:{suen\-} | \
 	{s\-ze}:{sze3\-} | \
 	{s\-ze}:{sze\-} | \
+	{s\-zu}:{szu\-} | \
 	{sar}:{sar\-} | \
 	{suen}:{suen\-} | \
 	{sze}:{sze3\-} | \
 	{sze}:{sze\-} | \
+	{szu}:{szu\-} | \
 	{t\-a}:{ta\-} | \
 	{t\-u}:{tu\-} | \
 	{t\-ukum}:{tukum\-} | \
@@ -94,8 +108,12 @@ $syll2sign$ = \
 	{tu}:{tu\-} | \
 	{tukum}:{tukum\-} | \
 	{u\-d}:{u4\-} | \
+	{u\-du}:{udu\-} | \
+	{u\-gula}:{ugula\-} | \
 	{u\-r}:{ur\-} | \
 	{ud}:{u4\-} | \
+	{udu}:{udu\-} | \
+	{ugula}:{ugula\-} | \
 	{ur}:{ur\-} | \
 	{z\-al}:{zal\-} | \
 	{zal}:{zal\-}

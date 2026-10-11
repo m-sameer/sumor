@@ -1,4 +1,6 @@
-import argparse, sys, os, re
+import argparse
+import re
+import sys
 
 args = argparse.ArgumentParser(description="get dict from CDLI-CoNLL")
 args.add_argument("files",
@@ -42,7 +44,7 @@ xpos2pos = {
 }
 
 for file in args.files:
-    with open(file, "rt", errors="ignore") as input:
+    with open(file, "rt", encoding="utf-8", errors="ignore") as input:
         for line in input:
             if "#" in line:
                 line = line[0:line.index("#")]  # strip comments
@@ -56,7 +58,7 @@ for file in args.files:
                         pos = [xpos2pos[xpos]]
                         break
                 pos = pos[0]
-                if not pos in xpos2pos.values():
+                if pos not in xpos2pos.values():
                     sys.stderr.write("warning: unknown POS tag in " +
                                      fields[args.pos_col] + "\n")
                     pos = "X"
@@ -66,7 +68,7 @@ for file in args.files:
                     if re.match(r".*[a-z0-1A-Z].*\[.*", chunk):
                         lemma_gloss = chunk
                         break
-                if not "[" in lemma_gloss:
+                if "[" not in lemma_gloss:
                     break
                 lemma = lemma_gloss.split("[")[0]
                 gloss = lemma_gloss.split("[")[1].split("]")[0]

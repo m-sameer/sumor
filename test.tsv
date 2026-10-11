@@ -12,3 +12,14 @@ ruler<GEN><ERG> ensi2.k=ak=e ensi2-ka-ke4
 border z.ag za
 garlic súm súm
 palace<GEN><GEN><ABL> é.gal=ak=ak=ta é-gal-ka-ta
+
+# Case expansion (DAT, COM, TERM)
+scribe<DAT>	dub-sar-a
+field<COM>	aszag-da
+water<TERM>	a-szi
+
+# Verbal forms
+place<PF>	gar-ed
+enter<3-SG>	kur-e
+give<3-SG>	sum-e
+seize<3-SG>	dab-e
